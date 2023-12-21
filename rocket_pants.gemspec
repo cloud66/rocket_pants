@@ -4,7 +4,7 @@ $:.unshift lib unless $:.include?(lib)
 
 Gem::Specification.new do |s|
   s.name        = "rocket_pants"
-  s.version     = "1.13.1"
+  s.version     = "1.13.2"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Darcy Laycock"]
   s.email       = ["sutto@sutto.net"]
@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'actionpack', '>= 3.0'
   s.add_dependency 'railties',   '>= 3.0'
-  s.add_dependency 'will_paginate', '~> 3.0'
+  s.add_dependency 'will_paginate', '>= 3.0', '< 5'
   s.add_dependency 'hashie',        '>= 1.0', '< 4'
   s.add_dependency 'api_smith'
   s.add_dependency 'moneta'
