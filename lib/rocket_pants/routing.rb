@@ -7,6 +7,8 @@ module RocketPants
     # @option options [Array<Integer>, Integer] :version the single version to support
     # @raise [ArgumentError] raised when the version isn't provided.
     def rocket_pants(options = {}, &blk)
+      # string keys would be dropped by the keyword splat below, so normalise them first.
+      options  = options.to_hash.symbolize_keys
       versions = extract_rocket_pants_versions options
 
       defaults = {:format => 'json'}

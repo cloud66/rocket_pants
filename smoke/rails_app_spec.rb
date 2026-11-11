@@ -26,6 +26,11 @@ describe 'rocket_pants inside a real Rails application' do
       RocketPants::Base.should include ActionController::Testing
     end
 
+    it 'should have loaded the controllers at boot' do
+      Rails.application.config.eager_load.should be true
+      Smoke.const_defined?(:WidgetsController, false).should be true
+    end
+
     it 'should draw the api routes without raising a deprecation' do
       paths = Rails.application.routes.routes.map { |route| route.path.spec.to_s }
       paths.should include '/:version/widgets/single(.:format)'
@@ -73,6 +78,11 @@ describe 'rocket_pants inside a real Rails application' do
     it 'should merge custom metadata into the envelope' do
       get '/1/widgets/with_metadata'
       response.body.should == %({"response":{"id":1},"ok":true})
+    end
+
+    it 'should escape awkward characters the same way on every rails version' do
+      get '/1/widgets/awkward'
+      response.body.should == %q|{"response":{"html":"\u003ca href=\"x\"\u003eTom \u0026 Jerry's\u003c/a\u003e","separator":"a\u2028b","accent":"café"}}|
     end
 
     it 'should build urls that carry the api version' do
@@ -135,7 +145,7 @@ describe 'rocket_pants inside a real Rails application' do
       get '/1/widgets/boom'
       response.status.should == 500
       json['error'].should == 'system'
-      Smoke::NOTIFIED.map(&:message).should == ['kaboom']
+      SmokeApp::NOTIFIED.map(&:message).should == ['kaboom']
     end
 
     it 'should map a missing parameter to a bad request' do
@@ -186,6 +196,7 @@ describe 'rocket_pants inside a real Rails application' do
       payload[:formats].should == [:json]
       payload[:params]['colour'].should == 'red'
       payload[:params]['action'].should == 'single'
+      payload[:params]['controller'].should == 'smoke/widgets'
     end
 
     it 'should publish start_processing.rocket_pants' do
@@ -206,9 +217,9 @@ describe 'rocket_pants inside a real Rails application' do
 
     it 'should log the request through the attached log subscriber' do
       get '/1/widgets/single'
-      Smoke::LOG.string.should include 'Processing by Smoke::WidgetsController#single'
-      Smoke::LOG.string.should include 'Completed 200 OK'
-      Smoke::LOG.string.should_not include 'Could not log'
+      SmokeApp::LOG.string.should include 'Processing by Smoke::WidgetsController#single'
+      SmokeApp::LOG.string.should include 'Completed 200 OK'
+      SmokeApp::LOG.string.should_not include 'Could not log'
     end
 
   end

@@ -3,6 +3,13 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+wanted="$(cat .ruby-version)"
+actual="$(ruby -e 'print RUBY_VERSION')"
+if [ "${actual}" != "${wanted}" ]; then
+  echo "bin/test needs ruby ${wanted} but found ${actual}; try: mise exec -- bin/test" >&2
+  exit 1
+fi
+
 for gemfile in gemfiles/rails_*.gemfile; do
   echo "== ${gemfile}"
   export BUNDLE_GEMFILE="${gemfile}"

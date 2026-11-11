@@ -7,6 +7,9 @@
 * Support for Rails 8.1: removed the unused `protected_instance_variables` setting, which relied on `config_accessor`, and the `api` / `rocket_pants` routes helper now passes its options to `scope` as keywords.
 * **Breaking:** JSONP support is removed. It has not worked since Rails 5.1, and calling `jsonp` now raises `NotImplementedError` when the controller class is loaded.
 * `RocketPants::Client` accepts the response object returned by current HTTParty versions again.
+* The gemspec now requires Ruby 3.3 or newer and Rails 7.2 or newer, which is what the fork is tested on.
+* The `api` / `rocket_pants` routes helper accepts string-keyed options.
+* `RocketPants::Client` raises `RocketPants::Error` for a malformed JSON body.
 * The specs run against Rails 7.2, 8.0 and 8.1 (see "Running the tests" in the README), including a suite that boots a real Rails application, and raise on any Rails deprecation.
 
 ## Version 1.13.1

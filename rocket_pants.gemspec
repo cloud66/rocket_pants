@@ -12,9 +12,10 @@ Gem::Specification.new do |s|
   s.summary     = "JSON API love for Rails and ActionController"
   s.description = "Rocket Pants adds JSON API love to Rails and ActionController, making it simpler to build API-oriented controllers."
   s.required_rubygems_version = ">= 1.3.6"
+  s.required_ruby_version     = ">= 3.3"
 
-  s.add_dependency 'actionpack', '>= 3.0'
-  s.add_dependency 'railties',   '>= 3.0'
+  s.add_dependency 'actionpack', '>= 7.2'
+  s.add_dependency 'railties',   '>= 7.2'
   s.add_dependency 'will_paginate', '>= 3.0', '< 5'
   s.add_dependency 'hashie',        '>= 1.0', '< 4'
   s.add_dependency 'api_smith'
@@ -23,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec-rails', '>= 2.4'
   s.add_development_dependency 'rr',          '>= 3.0'
   s.add_development_dependency 'webmock'
-  s.add_development_dependency 'activerecord', '>= 3.0'
+  s.add_development_dependency 'activerecord', '>= 7.2'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'reversible_data', '~> 1.0'
   s.add_development_dependency 'kaminari'

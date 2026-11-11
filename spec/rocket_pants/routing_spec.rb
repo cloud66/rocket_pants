@@ -69,6 +69,24 @@ describe RocketPants::Routing do
 
   end
 
+  context 'api routes given string keyed options' do
+
+    before :each do
+      draw_routes do
+        api({'version' => 3, 'module' => 'v3'}.with_indifferent_access) do
+          get 'a', :to => 'test#echo'
+        end
+      end
+    end
+
+    it 'should treat them like symbol keys' do
+      route = router.routes.first
+      route.path.spec.to_s.should == '/:version/a(.:format)'
+      route.defaults.should == {:controller => 'v3/test', :action => 'echo', :format => 'json'}
+    end
+
+  end
+
   context 'api routes with prefix support' do
 
     before :each do

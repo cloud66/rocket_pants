@@ -123,8 +123,7 @@ module RocketPants
     # @param [Hash, Object] response the response to check errors on
     # @raise [RocketPants::Error] a generic error when the type is wrong, or a registered error subclass otherwise.
     def check_response_errors(response)
-      # httparty wraps the parsed body in a response object that is no longer a Hash itself.
-      response = response.parsed_response if response.respond_to?(:parsed_response)
+      response = parsed_body(response)
       if !response.is_a?(Hash)
         raise RocketPants::Error, "The response from the server was not in a supported format."
       elsif response.has_key?("error")
@@ -138,6 +137,15 @@ module RocketPants
 
         raise klass.new(*error_messages)
       end
+    end
+
+    # httparty wraps the body in a response object that is no longer a Hash, and parses it lazily:
+    # a malformed body only fails here, and must end up as the unsupported format error.
+    def parsed_body(response)
+      return response unless response.respond_to?(:parsed_response)
+      response.parsed_response
+    rescue JSON::ParserError
+      nil
     end
     
   end

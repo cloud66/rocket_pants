@@ -681,7 +681,7 @@ If you're not on this list and thing you should be, let @Sutto know.
 
 ## Running the tests
 
-This fork is tested against Rails 7.2, 8.0 and 8.1 on the Ruby version in `.ruby-version`. Each Rails version has its own gemfile under `gemfiles/`, and `bin/test` runs the default `rake` task against all three:
+This fork is tested against Rails 7.2, 8.0 and 8.1 on the Ruby version in `.ruby-version`. Each Rails version has its own gemfile under `gemfiles/`. GitHub Actions runs all three on every pull request (`.github/workflows/tests.yml`), and `bin/test` does the same locally, refusing to run on a different Ruby version:
 
 ```bash
 bin/test
