@@ -1,0 +1,2 @@
+# mirrors .ruby-version so mise loads the repo-local version; keep the two in sync
+ruby 3.3.13

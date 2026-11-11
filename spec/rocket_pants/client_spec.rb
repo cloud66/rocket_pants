@@ -54,29 +54,47 @@ describe RocketPants::Client do
       stub_with_fixture :get, 'error?', 'simple_error'
       expect do
         client.get 'error'
-      end.to raise_error
+      end.to raise_error(RocketPants::Error)
     end
-    
+
     it 'should use error description for the exception' do
-      begin
-        stub_with_fixture :get, 'error?', 'simple_error'
-        client.get 'error'
-      rescue RocketPants::Error => e
-        error_object = Crack::JSON.parse(api_fixture_json('simple_error'))
+      stub_with_fixture :get, 'error?', 'simple_error'
+      error_object = JSON.parse(api_fixture_json('simple_error'))
+      expect { client.get 'error' }.to raise_error(RocketPants::Error) do |e|
         e.message.should == error_object["error_description"]
       end
     end
-    
+
     it 'should use error messages for invalid_resource exception' do
-      begin
-        stub_with_fixture :get, 'error?', 'invalid_resource_error'
-        client.get 'error'
-      rescue RocketPants::Error => e
-        error_object = Crack::JSON.parse(api_fixture_json('invalid_resource_error'))
+      stub_with_fixture :get, 'error?', 'invalid_resource_error'
+      error_object = JSON.parse(api_fixture_json('invalid_resource_error'))
+      expect { client.get 'error' }.to raise_error(RocketPants::InvalidResource) do |e|
         e.context.should be_kind_of(Hash)
         e.errors.should  == error_object["messages"]
         e.message.should == error_object["error_description"]
       end
+    end
+
+    unsupported = "The response from the server was not in a supported format."
+
+    it 'should raise a rocket pants error for a body that is not json' do
+      stub_api(:get, 'error?').to_return :status => 502, :body => "<html>Bad Gateway</html>", :headers => {'Content-Type' => 'text/html'}
+      expect { client.get 'error' }.to raise_error(RocketPants::Error, unsupported)
+    end
+
+    it 'should raise a rocket pants error for malformed json' do
+      stub_api(:get, 'error?').to_return :status => 200, :body => '{"response": ', :headers => {'Content-Type' => 'application/json'}
+      expect { client.get 'error' }.to raise_error(RocketPants::Error, unsupported)
+    end
+
+    it 'should raise a rocket pants error for an empty body' do
+      stub_api(:get, 'error?').to_return :status => 204, :body => '', :headers => {'Content-Type' => 'application/json'}
+      expect { client.get 'error' }.to raise_error(RocketPants::Error, unsupported)
+    end
+
+    it 'should raise a rocket pants error for json that is not an object' do
+      stub_api(:get, 'error?').to_return :status => 200, :body => '[1, 2]', :headers => {'Content-Type' => 'application/json'}
+      expect { client.get 'error' }.to raise_error(RocketPants::Error, unsupported)
     end
 
     it 'should use the rocket pants error registry' do
@@ -125,14 +143,14 @@ describe RocketPants::Client do
       response.should be_kind_of(WillPaginate::Collection)
       response.total_pages.should == 5
       response.total_entries.should == 20
-      response.should == Crack::JSON.parse(api_fixture_json('paginated'))['response']
+      response.should == JSON.parse(api_fixture_json('paginated'))['response']
     end
     
     it 'should correctly unpack arrays of objects' do
       stub_with_fixture :get, 'test?', 'collection'
       response = client.get('test')
       response.should be_kind_of(Array)
-      response.should == Crack::JSON.parse(api_fixture_json('collection'))['response']
+      response.should == JSON.parse(api_fixture_json('collection'))['response']
     end
     
   end
@@ -198,7 +216,7 @@ describe RocketPants::Client do
     
     it 'should make it easy to set an api host' do
       add_response_stub stub_request(:get, 'http://localhost:3001/1/test?'), 'simple_object'
-      client.get('test').should == Crack::JSON.parse(api_fixture_json('simple_object'))['response']
+      client.get('test').should == JSON.parse(api_fixture_json('simple_object'))['response']
     end
     
   end

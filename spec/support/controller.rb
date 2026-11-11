@@ -71,7 +71,7 @@ class TestController < RocketPants::Base
   end
 
   def test_metadata
-    expose({:test => true}, :metadata => params[:metadata])
+    expose({:test => true}, :metadata => params[:metadata].to_unsafe_h)
   end
 
   def premature_termination

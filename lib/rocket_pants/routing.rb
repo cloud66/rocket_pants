@@ -7,6 +7,8 @@ module RocketPants
     # @option options [Array<Integer>, Integer] :version the single version to support
     # @raise [ArgumentError] raised when the version isn't provided.
     def rocket_pants(options = {}, &blk)
+      # string keys would be dropped by the keyword splat below, so normalise them first.
+      options  = options.to_hash.symbolize_keys
       versions = extract_rocket_pants_versions options
 
       defaults = {:format => 'json'}
@@ -25,7 +27,8 @@ module RocketPants
         :path        => ':version',
         :defaults    => defaults
       })
-      scope options, &blk
+      # keywords, not a positional hash: rails 8.1 deprecates the hash form and 8.2 removes it.
+      scope(**options, &blk)
     end
     alias api rocket_pants
 

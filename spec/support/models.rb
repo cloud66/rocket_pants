@@ -1,5 +1,7 @@
 require 'reversible_data'
 ReversibleData.in_memory!
+# active record connects lazily since 7.2, and reversible_data silently skips table creation until connected.
+ActiveRecord::Base.connection.verify!
 
 ReversibleData.add(:users) do |t|
   t.integer :age
