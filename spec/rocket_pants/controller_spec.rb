@@ -230,7 +230,7 @@ describe RocketPants::Base do
 
     it 'should let you override the content type' do
       stub(TestController).test_data    { {:hello => "World"} }
-      stub(TestController).test_options { {:content_type => Mime::HTML} }
+      stub(TestController).test_options { {:content_type => Mime[:html]} }
       get :test_data
       response.headers['Content-Type'].should =~ /text\/html/
     end
@@ -346,71 +346,29 @@ describe RocketPants::Base do
 
   describe 'jsonp support' do
 
-    let!(:first_controller) { Class.new(TestController)   }
-    let!(:controller_class) { Class.new(first_controller) }
+    let!(:controller_class) { Class.new(TestController) }
 
-    it 'should let you specify requests as having jsonp' do
-      controller_class.jsonp
-      get :echo, :echo => "Hello World"
-      response.content_type.should include 'application/json'
-      response.body.should == %({"response":{"echo":"Hello World"}})
-      get :echo, :echo => "Hello World", :callback => "test"
-      response.content_type.should include 'application/javascript'
-      response.body.should == %|test({"response":{"echo":"Hello World"}});|
+    it 'should refuse to enable jsonp, saying why and what to do' do
+      expect { controller_class.jsonp }.to raise_error(NotImplementedError, /JSONP is not supported.*Remove the `jsonp` call/)
     end
 
-    it 'should automatically inherit it' do
-      first_controller.jsonp :enable => true
-      get :echo, :echo => "Hello World", :callback => "test"
-      response.content_type.should include 'application/javascript'
-      response.body.should == %|test({"response":{"echo":"Hello World"}});|
-      get :echo, :echo => "Hello World", :other_callback => "test"
-      response.content_type.should include 'application/json'
-      response.body.should == %({"response":{"echo":"Hello World"}})
+    it 'should refuse jsonp with options' do
+      expect { controller_class.jsonp :parameter => 'cb' }.to raise_error(NotImplementedError, /JSONP is not supported/)
+      expect { controller_class.jsonp :only => [:test_data] }.to raise_error(NotImplementedError, /JSONP is not supported/)
     end
 
-    it 'should allow you to disable at a lower level' do
-      first_controller.jsonp :enable => true
-      controller_class.jsonp :enable => false
+    it 'should refuse an explicit disable too' do
+      expect { controller_class.jsonp :enable => false }.to raise_error(NotImplementedError, /JSONP is not supported/)
+    end
+
+    it 'should name the controller that called it' do
+      expect { TestController.jsonp }.to raise_error(NotImplementedError, /from TestController\./)
+    end
+
+    it 'should not wrap a response when a callback parameter is given' do
       get :echo, :echo => "Hello World", :callback => "test"
       response.content_type.should include 'application/json'
       response.body.should == %({"response":{"echo":"Hello World"}})
-    end
-
-    it 'should let you specify options to it' do
-      controller_class.jsonp :parameter => 'cb'
-      get :echo, :echo => "Hello World", :cb => "test"
-      response.content_type.should include 'application/javascript'
-      response.body.should == %|test({"response":{"echo":"Hello World"}});|
-      get :echo, :echo => "Hello World", :callback => "test"
-      response.content_type.should include 'application/json'
-      response.body.should == %({"response":{"echo":"Hello World"}})
-    end
-
-    it 'should let you specify it on a per action level' do
-      controller_class.jsonp :only => [:test_data]
-      get :echo, :echo => "Hello World", :callback => "test"
-      response.content_type.should include 'application/json'
-      response.body.should == %({"response":{"echo":"Hello World"}})
-      stub(controller_class).test_data { {"other" => true} }
-      get :test_data, :callback => "test"
-      response.content_type.should include 'application/javascript'
-      response.body.should == %|test({"response":{"other":true}});|
-    end
-
-    it 'should not wrap non-get actions' do
-      controller_class.jsonp
-      post :echo, :echo => "Hello World", :callback => "test"
-      response.content_type.should include 'application/json'
-      response.body.should == %({"response":{"echo":"Hello World"}})
-    end
-
-    it 'should have the correct content length' do
-      controller_class.jsonp
-      get :echo, :echo => "Hello World", :callback => "test"
-      response.content_type.should include 'application/javascript'
-      response.body.should == %|test({"response":{"echo":"Hello World"}});|
-      response.headers['Content-Length'].to_i.should == response.body.bytesize
     end
 
   end

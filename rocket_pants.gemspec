@@ -4,7 +4,7 @@ $:.unshift lib unless $:.include?(lib)
 
 Gem::Specification.new do |s|
   s.name        = "rocket_pants"
-  s.version     = "1.13.2"
+  s.version     = "1.13.3"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Darcy Laycock"]
   s.email       = ["sutto@sutto.net"]
@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'moneta'
   s.add_development_dependency 'rspec',       '>= 2.4'
   s.add_development_dependency 'rspec-rails', '>= 2.4'
-  s.add_development_dependency 'rr',          '~> 1.0'
+  s.add_development_dependency 'rr',          '>= 3.0'
   s.add_development_dependency 'webmock'
   s.add_development_dependency 'activerecord', '>= 3.0'
   s.add_development_dependency 'sqlite3'

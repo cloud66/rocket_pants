@@ -25,7 +25,8 @@ module RocketPants
         :path        => ':version',
         :defaults    => defaults
       })
-      scope options, &blk
+      # keywords, not a positional hash: rails 8.1 deprecates the hash form and 8.2 removes it.
+      scope(**options, &blk)
     end
     alias api rocket_pants
 

@@ -2,6 +2,13 @@
 
 **Please Note**: This change log only covers v1.3 forwards - apologies for anything missing prior to that.
 
+## Version 1.13.3 (cloud66 fork)
+
+* Support for Rails 8.1: removed the unused `protected_instance_variables` setting, which relied on `config_accessor`, and the `api` / `rocket_pants` routes helper now passes its options to `scope` as keywords.
+* **Breaking:** JSONP support is removed. It has not worked since Rails 5.1, and calling `jsonp` now raises `NotImplementedError` when the controller class is loaded.
+* `RocketPants::Client` accepts the response object returned by current HTTParty versions again.
+* The specs run against Rails 7.2, 8.0 and 8.1 (see "Running the tests" in the README), including a suite that boots a real Rails application, and raise on any Rails deprecation.
+
 ## Version 1.13.1
 
 * Bug fix to bugsnag, thanks to [DamirSvrtan](https://github.com/DamirSvrtan).

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# runs the default rake task (specs, smoke and maintained integrations) on every supported rails version.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+for gemfile in gemfiles/rails_*.gemfile; do
+  echo "== ${gemfile}"
+  export BUNDLE_GEMFILE="${gemfile}"
+  bundle install --quiet
+  bundle exec rake
+done

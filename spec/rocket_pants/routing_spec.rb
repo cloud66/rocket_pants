@@ -50,6 +50,25 @@ describe RocketPants::Routing do
 
   end
 
+  context 'api routes with extra scope options' do
+
+    before :each do
+      draw_routes do
+        api :version => 3, :module => 'v3' do
+          get 'a', :to => 'test#echo'
+        end
+      end
+    end
+
+    it 'should pass the options through to the scope' do
+      # asserted on the route itself: recognising the path would need a real V3::TestController.
+      route = router.routes.first
+      route.path.spec.to_s.should == '/:version/a(.:format)'
+      route.defaults.should == {:controller => 'v3/test', :action => 'echo', :format => 'json'}
+    end
+
+  end
+
   context 'api routes with prefix support' do
 
     before :each do

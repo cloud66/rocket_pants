@@ -1,0 +1,13 @@
+source "https://rubygems.org"
+
+gemspec path: ".."
+
+gem "railties",     "~> 8.0.0"
+gem "actionpack",   "~> 8.0.0"
+gem "activerecord", "~> 8.0.0"
+
+gem "rspec"
+gem "active_model_serializers", "> 0.0"
+
+# central locks json 2.21.x; on rails 8.1 that selects active support's newer json encoder
+gem "json", "~> 2.21"

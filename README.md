@@ -104,24 +104,7 @@ with the `Etag` header set.
 
 #### JSONP
 
-If you want to enable JSONP support, it's as simple as calling `jsonp` in your class method:
-
-```ruby
-class MyController < RocketPants::Base
-  jsonp
-end
-```
-
-By default this will use the `callback` parameter, e.g. `GET /1/my?callback=console.log`.
-To change this parameter, specify the `parameter` option like so:
-
-```ruby
-class MyController < RocketPants::Base
-  jsonp :parameter => :jsonp
-end
-```
-
-Finally, to disable it in a subclass, simple call `jsonp` in the child and pass `:enable => false` as an option.
+JSONP is **not supported** in this fork. The original implementation relied on controller callbacks that Rails removed in 5.1, so it has not worked for a long time. Calling `jsonp` in a controller now raises `NotImplementedError` as soon as the class is loaded, with a message naming the controller, so it cannot be switched on by mistake.
 
 #### Header Metadata
 
@@ -695,6 +678,27 @@ Inside the `RSpec.configure do |config|` block.
 - [Damir Svrtan](https://github.com/DamirSvrtan) for support for bugsnag, docs and tests.
 
 If you're not on this list and thing you should be, let @Sutto know.
+
+## Running the tests
+
+This fork is tested against Rails 7.2, 8.0 and 8.1 on the Ruby version in `.ruby-version`. Each Rails version has its own gemfile under `gemfiles/`, and `bin/test` runs the default `rake` task against all three:
+
+```bash
+bin/test
+```
+
+To run against one Rails version:
+
+```bash
+export BUNDLE_GEMFILE=gemfiles/rails_8_1.gemfile
+bundle install
+bundle exec rake spec         # the main suite
+bundle exec rake spec:smoke   # boots a real Rails application around the gem
+```
+
+The `smoke` specs run in their own process because Rails has to be loaded before the gem for its Railtie to be set up. Every Rails deprecation is raised as an error in both suites.
+
+The kaminari and RSpec matcher integration specs (`spec/integration`) are not maintained in this fork and currently fail.
 
 ## Contributing
 

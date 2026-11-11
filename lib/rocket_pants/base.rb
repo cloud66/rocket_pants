@@ -67,12 +67,6 @@ module RocketPants
       include mixin
     end
 
-    # Bug fix for rails - include compatibility.
-    config_accessor :protected_instance_variables
-    self.protected_instance_variables = %w(@assigns @performed_redirect @performed_render
-      @variables_added @request_origin @url @parent_controller @action_name
-      @before_filter_chain_aborted @_headers @_params @_response)
-
     ActiveSupport.run_load_hooks(:rocket_pants, self)
 
     # Methods for integration purposes.
